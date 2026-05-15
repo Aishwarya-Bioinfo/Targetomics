@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Targetomics</title>
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo-section {
+
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-img {
+
+            width: 420px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+
+            color: #1f4e79;
+            margin-top: 35px;
+            text-align: center;
+        }
+
+        .info-box {
+
+            background: #eef5ff;
+            border-left: 5px solid #1f4e79;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+
+        .warning-box {
+
+            background: #fff4e5;
+            border-left: 5px solid #ff9800;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+
+        .info-box ul,
+        .warning-box ul {
+
+            width: fit-content;
+            margin: auto;
+
+            text-align: left;
+        }
+
+        .upload-box {
+
+            margin-top: 35px;
+            text-align: center;
+        }
+
+        input[type=file] {
+
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        button {
+
+            background: #1f4e79;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+
+            background: #163a5c;
+        }
+
+        .plot-img {
+
+            width: 60%;
+            max-width: 700px;
+
+            display: block;
+
+            margin: 20px auto;
+
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        table {
+
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            font-size: 14px;
+            table-layout: fixed;
+            word-wrap: break-word;
+        }
+
+        th, td {
+
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            vertical-align: top;
+        }
+
+        th {
+
+            background-color: #1f4e79;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+
+            background-color: #f9f9f9;
+        }
+
+        .example-table {
+
+            margin-top: 15px;
+        }
+
+        .footer {
+
+            margin-top: 50px;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ========================= -->
+    <!-- LOGO -->
+    <!-- ========================= -->
+
+    <div class="logo-section">
+
+        <img
+            src="{{ url_for('static', filename='logo.png') }}"
+            alt="Targetomics Logo"
+            class="logo-img"
+        >
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- SUPPORTED -->
+    <!-- ========================= -->
+
+    <div class="info-box">
+
+        <h2>Supported Input Formats</h2>
+
+        <ul>
+
+            <li>CSV / TSV / TXT / XLSX</li>
+
+            <li>Human transcriptomic expression matrices</li>
+
+            <li>Normalized counts / TPM / FPKM / raw counts</li>
+
+            <li>First column should contain gene names</li>
+
+            <li>Remaining columns should contain numeric expression values</li>
+
+        </ul>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- NOT SUPPORTED -->
+    <!-- ========================= -->
+
+    <div class="warning-box">
+
+        <h2>Currently Not Supported</h2>
+
+        <ul>
+
+            <li>GEO metadata-only files</li>
+
+            <li>Supplementary pathway tables</li>
+
+            <li>Non-human datasets</li>
+
+            <li>DEG summary tables without expression matrices</li>
+
+        </ul>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- EXAMPLE -->
+    <!-- ========================= -->
+
+    <div class="info-box">
+
+        <h2>Example Valid Input Structure</h2>
+
+        <table class="example-table">
+
+            <tr>
+
+                <th>Gene</th>
+                <th>Control_1</th>
+                <th>Control_2</th>
+                <th>Disease_1</th>
+                <th>Disease_2</th>
+
+            </tr>
+
+            <tr>
+
+                <td>TP53</td>
+                <td>120</td>
+                <td>115</td>
+                <td>240</td>
+                <td>260</td>
+
+            </tr>
+
+            <tr>
+
+                <td>EGFR</td>
+                <td>80</td>
+                <td>75</td>
+                <td>190</td>
+                <td>210</td>
+
+            </tr>
+
+        </table>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- UPLOAD -->
+    <!-- ========================= -->
+
+    <div class="upload-box">
+
+        <form method="POST" enctype="multipart/form-data">
+
+            <input type="file" name="file" required>
+
+            <br><br>
+
+            <button type="submit">
+
+                Analyze Omics Data
+
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- RESULTS -->
+    <!-- ========================= -->
+
+    {% if table %}
+
+        <div style="text-align:center; margin-top:20px;">
+
+            <a href="/download">
+
+                <button>
+
+                    Download Results
+
+                </button>
+
+            </a>
+
+        </div>
+
+        <h2>Top Protein Targets</h2>
+
+        <div style="overflow-x:auto;">
+
+            {{ table|safe }}
+
+        </div>
+
+    {% endif %}
+
+    <!-- ========================= -->
+    <!-- VOLCANO -->
+    <!-- ========================= -->
+
+    {% if plot %}
+
+        <h2>Volcano Plot</h2>
+
+        <img
+            src="{{ plot }}"
+            alt="Volcano Plot"
+            class="plot-img"
+        >
+
+    {% endif %}
+
+    <!-- ========================= -->
+    <!-- PATHWAY -->
+    <!-- ========================= -->
+
+    {% if pathway_plot %}
+
+        <h2>Pathway Enrichment</h2>
+
+        <img
+            src="{{ pathway_plot }}"
+            alt="Pathway Plot"
+            class="plot-img"
+        >
+
+    {% endif %}
+
+    <!-- ========================= -->
+    <!-- FOOTER -->
+    <!-- ========================= -->
+
+    <div class="footer">
+
+        Targetomics • AI-assisted Multi-Omics Target Prioritization Platform
+
+    </div>
+
+</div>
+
+</body>
+</html>
